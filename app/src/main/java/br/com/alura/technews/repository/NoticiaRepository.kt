@@ -1,5 +1,6 @@
 package br.com.alura.technews.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import br.com.alura.technews.asynctask.BaseAsyncTask
@@ -27,12 +28,26 @@ class NoticiaRepository(
         return noticiasLiveData
     }
 
-    fun salva(
-        noticia: Noticia,
-        quandoSucesso: (noticiaNova: Noticia) -> Unit,
-        quandoFalha: (erro: String?) -> Unit
-    ) {
-        salvaNaApi(noticia, quandoSucesso, quandoFalha)
+    fun salvaOuEdita(noticia: Noticia): LiveData<Resource<Void>> {
+        return if (noticia.id > 0) {
+            edita(noticia)
+        } else {
+            salva(noticia)
+        }
+    }
+
+    private fun salva(noticia: Noticia): MutableLiveData<Resource<Void>> {
+        Log.i("NoticiaRep", "Salvando...")
+        val resourceNoticia = MutableLiveData<Resource<Void>>()
+        salvaNaApi(
+            noticia,
+            quandoSucesso = {
+                resourceNoticia.value = Resource()
+            },
+            quandoFalha = { erro ->
+                resourceNoticia.value = Resource(error = erro)
+            })
+        return resourceNoticia
     }
 
     fun remove(
@@ -43,12 +58,15 @@ class NoticiaRepository(
         removeNaApi(noticia, quandoSucesso, quandoFalha)
     }
 
-    fun edita(
-        noticia: Noticia,
-        quandoSucesso: (noticiaEditada: Noticia) -> Unit,
-        quandoFalha: (erro: String?) -> Unit
-    ) {
-        editaNaApi(noticia, quandoSucesso, quandoFalha)
+    fun edita(noticia: Noticia): LiveData<Resource<Void>> {
+        Log.i("NoticiaRep", "Editando...")
+        val resourceNoticia = MutableLiveData<Resource<Void>>()
+        editaNaApi(noticia, quandoSucesso = {
+            resourceNoticia.value = Resource()
+        }, quandoFalha = { erro ->
+            resourceNoticia.value = Resource(error = erro)
+        })
+        return resourceNoticia
     }
 
     fun buscaPorId(
