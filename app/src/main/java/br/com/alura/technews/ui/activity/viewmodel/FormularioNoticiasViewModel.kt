@@ -1,6 +1,7 @@
 package br.com.alura.technews.ui.activity.viewmodel
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import br.com.alura.technews.model.Noticia
@@ -15,6 +16,10 @@ class FormularioNoticiasViewModel(private val repository: NoticiaRepository) : V
 
     fun salva(noticia: Noticia): LiveData<Resource<Void>> {
         return repository.salvaOuEdita(noticia)
+    }
+
+    fun buscaPorId(noticiaId: Long) : MutableLiveData<Noticia?> {
+        return repository.buscaPorId(noticiaId)
     }
 }
 

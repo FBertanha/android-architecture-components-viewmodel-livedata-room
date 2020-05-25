@@ -24,12 +24,9 @@ class FormularioNoticiaActivity : AppCompatActivity() {
     private val noticiaId: Long by lazy {
         intent.getLongExtra(NOTICIA_ID_CHAVE, 0)
     }
-    private val repository by lazy {
-        NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
-    }
 
     private val viewModel by lazy {
-//        val repository = NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
+        val repository = NoticiaRepository(AppDatabase.getInstance(this).noticiaDAO)
         val factory = FormularioNoticiasViewModelFactory(repository)
         ViewModelProviders.of(this, factory).get(FormularioNoticiasViewModel::class.java)
     }
@@ -50,10 +47,10 @@ class FormularioNoticiaActivity : AppCompatActivity() {
     }
 
     private fun preencheFormulario() {
-        repository.buscaPorId(noticiaId, quandoSucesso = { noticiaEncontrada ->
-            if (noticiaEncontrada != null) {
-                activity_formulario_noticia_titulo.setText(noticiaEncontrada.titulo)
-                activity_formulario_noticia_texto.setText(noticiaEncontrada.texto)
+        viewModel.buscaPorId(noticiaId).observe(this, Observer { noticiaEncontrada ->
+            noticiaEncontrada?.let {
+                activity_formulario_noticia_titulo.setText(it.titulo)
+                activity_formulario_noticia_texto.setText(it.texto)
             }
         })
     }
