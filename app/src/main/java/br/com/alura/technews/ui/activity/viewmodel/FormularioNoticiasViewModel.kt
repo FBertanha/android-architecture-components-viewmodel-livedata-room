@@ -18,7 +18,7 @@ class FormularioNoticiasViewModel(private val repository: NoticiaRepository) : V
         return repository.salvaOuEdita(noticia)
     }
 
-    fun buscaPorId(noticiaId: Long) : MutableLiveData<Noticia?> {
+    fun buscaPorId(noticiaId: Long) : LiveData<Noticia?> {
         return repository.buscaPorId(noticiaId)
     }
 }
